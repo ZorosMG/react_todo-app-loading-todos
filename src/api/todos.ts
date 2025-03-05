@@ -13,3 +13,18 @@ export const createTodo = ({
 }: Omit<Todo, 'id' | 'userId'>) => {
   return client.post<Todo>('/todos', { userId: USER_ID, title, completed });
 };
+
+// api/todos.ts
+export const deleteTodo = async (todoId: number): Promise<void> => {
+  try {
+    const response = await fetch(`/api/todos/${todoId}`, {
+      method: 'DELETE',
+    });
+
+    if (!response.ok) {
+      throw new Error('Failed to delete todo');
+    }
+  } catch (error) {
+    throw error;
+  }
+};

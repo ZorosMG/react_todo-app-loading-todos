@@ -1,10 +1,9 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */
-/* eslint-disable @typescript-eslint/no-shadow */
 /* eslint-disable no-console */
+/* eslint-disable @typescript-eslint/no-shadow */
 import React, { useEffect, useRef, useState, useMemo } from 'react';
 import { UserWarning } from './UserWarning';
 import { USER_ID } from './api/todos';
-import { createTodo, getTodos } from './api/todos';
+import { createTodo, getTodos, deleteTodo } from './api/todos'; // Залишаємо deleteTodo тут
 import { TodoList } from './component/TodoList';
 import { Todo } from './types/Todo';
 import classNames from 'classnames';
@@ -13,13 +12,23 @@ import { Footer } from './component/Footer';
 export const App: React.FC = () => {
   const [todos, setTodos] = useState<Todo[]>([]);
   const [title, setTitle] = useState('');
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const [loading, setLoading] = useState(false);
   const [errorMessage, setErrorMessage] = useState('');
   const [filter, setFilter] = useState('all');
 
   const inputRef = useRef<HTMLInputElement | null>(null);
 
-  // Function to filter todos based on the selected filter
+  // Функція для видалення задачі
+  const handleDeleteTodo = (todoId: number) => {
+    setTodos(todos.filter(todo => todo.id !== todoId));
+    deleteTodo(todoId).catch(error => {
+      setErrorMessage('Unable to delete todo');
+      console.error(error);
+    });
+  };
+
+  // Функція для фільтрації задач
   const filterTodos = useMemo(() => {
     return (todos: Todo[], filter: string) => {
       switch (filter) {
@@ -114,7 +123,9 @@ export const App: React.FC = () => {
       </header>
 
       <section className="todoapp__main">
-        {todos.length > 0 && <TodoList todos={filteredTodos} />}
+        {todos.length > 0 && (
+          <TodoList todos={filteredTodos} onDeleteTodo={handleDeleteTodo} />
+        )}
       </section>
 
       <footer className="todoapp__footer">
