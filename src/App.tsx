@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 /* eslint-disable no-console */
 /* eslint-disable @typescript-eslint/no-shadow */
 import React, { useEffect, useRef, useState, useMemo } from 'react';
@@ -12,7 +13,6 @@ import { Footer } from './component/Footer';
 export const App: React.FC = () => {
   const [todos, setTodos] = useState<Todo[]>([]);
   const [title, setTitle] = useState('');
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const [loading, setLoading] = useState(false);
   const [errorMessage, setErrorMessage] = useState('');
   const [filter, setFilter] = useState('all');
@@ -127,58 +127,13 @@ export const App: React.FC = () => {
         )}
       </section>
 
-      <footer className="todoapp__footer">
-        <span className="todo-count" data-cy="TodosCounter">
-          {todos.length} items left
-        </span>
-
-        <nav className="filter">
-          <a
-            href="#/"
-            className={classNames('filter__link', {
-              selected: filter === 'all',
-            })}
-            onClick={() => setFilter('all')}
-          >
-            All
-          </a>
-          <a
-            href="#/active"
-            className={classNames('filter__link', {
-              selected: filter === 'active',
-            })}
-            onClick={() => setFilter('active')}
-          >
-            Active
-          </a>
-          <a
-            href="#/completed"
-            className={classNames('filter__link', {
-              selected: filter === 'completed',
-            })}
-            onClick={() => setFilter('completed')}
-          >
-            Completed
-          </a>
-        </nav>
-
-        <button
-          type="button"
-          className="todoapp__clear-completed"
-          disabled={completedTodos.length === 0}
-        >
-          Clear completed
-        </button>
-      </footer>
-
-      {todos.length !== 0 && (
-        <Footer
-          filter={filter}
-          setFilter={setFilter}
-          completedTodos={completedTodos}
-          notCompletedTodos={notCompletedTodos}
-        />
-      )}
+      {/* Тут футер викликається лише один раз */}
+      <Footer
+        filter={filter}
+        setFilter={setFilter}
+        completedTodos={completedTodos}
+        notCompletedTodos={notCompletedTodos}
+      />
 
       {errorMessage && (
         <div
@@ -200,5 +155,5 @@ export const App: React.FC = () => {
         </div>
       )}
     </div>
-  ); //upd
+  );
 };
