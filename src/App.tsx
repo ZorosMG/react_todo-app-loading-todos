@@ -127,6 +127,50 @@ export const App: React.FC = () => {
         )}
       </section>
 
+      <footer className="todoapp__footer">
+        <span className="todo-count" data-cy="TodosCounter">
+          {todos.length} items left
+        </span>
+
+        <nav className="filter">
+          <a
+            href="#/"
+            className={classNames('filter__link', {
+              selected: filter === 'all',
+            })}
+            onClick={() => setFilter('all')}
+          >
+            All
+          </a>
+          <a
+            href="#/active"
+            className={classNames('filter__link', {
+              selected: filter === 'active',
+            })}
+            onClick={() => setFilter('active')}
+          >
+            Active
+          </a>
+          <a
+            href="#/completed"
+            className={classNames('filter__link', {
+              selected: filter === 'completed',
+            })}
+            onClick={() => setFilter('completed')}
+          >
+            Completed
+          </a>
+        </nav>
+
+        <button
+          type="button"
+          className="todoapp__clear-completed"
+          disabled={completedTodos.length === 0}
+        >
+          Clear completed
+        </button>
+      </footer>
+
       {todos.length !== 0 && (
         <Footer
           filter={filter}
