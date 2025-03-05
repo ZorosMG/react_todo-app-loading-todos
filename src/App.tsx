@@ -3,7 +3,7 @@
 import React, { useEffect, useRef, useState, useMemo } from 'react';
 import { UserWarning } from './UserWarning';
 import { USER_ID } from './api/todos';
-import { createTodo, getTodos, deleteTodo } from './api/todos'; // Залишаємо deleteTodo тут
+import { createTodo, getTodos, deleteTodo } from './api/todos';
 import { TodoList } from './component/TodoList';
 import { Todo } from './types/Todo';
 import classNames from 'classnames';
@@ -19,7 +19,6 @@ export const App: React.FC = () => {
 
   const inputRef = useRef<HTMLInputElement | null>(null);
 
-  // Функція для видалення задачі
   const handleDeleteTodo = (todoId: number) => {
     setTodos(todos.filter(todo => todo.id !== todoId));
     deleteTodo(todoId).catch(error => {
@@ -28,7 +27,6 @@ export const App: React.FC = () => {
     });
   };
 
-  // Функція для фільтрації задач
   const filterTodos = useMemo(() => {
     return (todos: Todo[], filter: string) => {
       switch (filter) {
