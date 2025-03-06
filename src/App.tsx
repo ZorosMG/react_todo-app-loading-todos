@@ -1,143 +1,62 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
-/* eslint-disable @typescript-eslint/no-unused-vars */
-/* eslint-disable @typescript-eslint/no-shadow */
-/* eslint-disable no-console */
-// App.tsx
-import React, { useState, useEffect, useRef, useMemo } from 'react';
+/* eslint-disable jsx-a11y/label-has-associated-control */
+/* eslint-disable jsx-a11y/control-has-associated-label */
+import React, { useEffect, useState } from 'react';
 import { UserWarning } from './UserWarning';
-import { USER_ID } from './api/todos';
-import { createTodo, getTodos, deleteTodo, clearCompleted } from './api/todos';
-import { TodoList } from './component/TodoList';
+import { getPreparedTodos } from './utils/TodoFilter';
+import * as todoService from './api/todos';
 import { Todo } from './types/Todo';
-import { TodoInput } from './component/TodoInput';
-import { ErrorNotification } from './component/ErrorNotification';
-import { TodoFooter } from './component/TodoFooter';
+import { Filter } from './types/Filter';
+import { TodoForm } from './component/TodoForm';
+import { TodoList } from './component/TodoList';
+import { Footer } from './component/Footer';
+import { Notification } from './component/Notification';
 
 export const App: React.FC = () => {
   const [todos, setTodos] = useState<Todo[]>([]);
-  const [title, setTitle] = useState('');
-  const [loading, setLoading] = useState(false);
-  const [errorMessage, setErrorMessage] = useState('');
-  const [filter, setFilter] = useState('all');
+  const [errorMessage, setErrorMessage] = useState<string>('');
+  const [filterBy, setFilterBy] = useState(Filter.All);
 
-  const inputRef = useRef<HTMLInputElement | null>(null);
-
-  const handleDeleteTodo = (todoId: number) => {
-    setTodos(todos.filter(todo => todo.id !== todoId));
-    deleteTodo(todoId).catch(error => {
-      setErrorMessage('Unable to delete todo');
-      console.error(error);
-    });
-  };
-
-  const handleClearCompleted = () => {
-    setTodos(todos.filter(todo => !todo.completed));
-    clearCompleted().catch((error: any) => {
-      setErrorMessage('Unable to clear completed todos');
-      console.error(error);
-    });
-  };
-
-  const filterTodos = useMemo(() => {
-    return (todos: Todo[], filter: string) => {
-      switch (filter) {
-        case 'active':
-          return todos.filter(todo => !todo.completed);
-        case 'completed':
-          return todos.filter(todo => todo.completed);
-        default:
-          return todos;
-      }
-    };
-  }, []);
-
-  const filteredTodos = filterTodos(todos, filter);
+  const preparedTodos = getPreparedTodos(todos, filterBy);
   const completedTodos = todos.filter(todo => todo.completed);
-  const notCompletedTodos = todos.filter(todo => !todo.completed);
+  const todoCount = todos.length - completedTodos.length;
 
-  useEffect(() => {
+  const loadTodos = () => {
     setErrorMessage('');
-    setLoading(true);
-
-    if (inputRef.current) {
-      inputRef.current.focus();
-    }
-
-    getTodos()
+    todoService
+      .getTodos()
       .then(setTodos)
-      .catch(error => {
-        setErrorMessage('Unable to load todos');
-        console.error(error);
-      })
-      .finally(() => setLoading(false));
-  }, []);
-
-  useEffect(() => {
-    const timerId = setTimeout(() => {
-      setErrorMessage('');
-    }, 3000);
-
-    return () => clearTimeout(timerId);
-  }, [errorMessage]);
-
-  const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    setErrorMessage('');
-    setTitle(event.target.value);
+      .catch(() => setErrorMessage('Unable to load todos'))
+      .then(() => {
+        setTimeout(() => {
+          setErrorMessage('');
+        }, 3000);
+      });
   };
 
-  const handleSubmit = (event: React.FormEvent) => {
-    event.preventDefault();
+  useEffect(loadTodos, []);
 
-    if (title.trim().length === 0) {
-      setErrorMessage('Title should not be empty');
-
-      return;
-    }
-
-    createTodo({ title, completed: false })
-      .then(newTodo => {
-        setTodos(currentTodos => [...currentTodos, newTodo]);
-      })
-      .catch(error => {
-        setErrorMessage('Unable to add a todo');
-        console.error(error);
-      })
-      .finally(() => setTitle(''));
-  };
-
-  if (!USER_ID) {
+  if (!todoService) {
     return <UserWarning />;
   }
 
   return (
-    <div className="todoapp">
-      <h1 className="todoapp__title">todos</h1>
-
+    <div className="todoapp__content">
       <header className="todoapp__header">
-        <TodoInput
-          title={title}
-          onChange={handleChange}
-          onSubmit={handleSubmit}
-        />
+        <TodoForm todos={todos} />
       </header>
-
-      <section className="todoapp__main">
-        {todos.length > 0 && (
-          <TodoList todos={filteredTodos} onDeleteTodo={handleDeleteTodo} />
-        )}
-      </section>
-
-      <TodoFooter
-        filter={filter}
-        setFilter={setFilter}
-        completedTodos={completedTodos}
-        notCompletedTodos={notCompletedTodos}
-        onClearCompleted={handleClearCompleted}
-      />
-
-      <ErrorNotification
-        message={errorMessage}
-        onHide={() => setErrorMessage('')}
+      <TodoList preparedTodos={preparedTodos} errorMessage={errorMessage} />
+      {!errorMessage && (
+        <Footer
+          todos={todos}
+          errorMessage={errorMessage}
+          setFilterBy={setFilterBy}
+          filterBy={filterBy}
+          todoCount={todoCount}
+        />
+      )}
+      <Notification
+        errorMessage={errorMessage}
+        onClose={() => setErrorMessage('')}
       />
     </div>
   );
