@@ -8,11 +8,10 @@ import { USER_ID } from './api/todos';
 import { createTodo, getTodos, deleteTodo } from './api/todos';
 import { TodoList } from './component/TodoList';
 import { Todo } from './types/Todo';
-// import classNames from 'classnames';
-// import { Footer } from './component/Footer';
+import classNames from 'classnames';
+import { Footer } from './component/Footer';
 import { TodoInput } from './component/TodoInput';
 import { ErrorNotification } from './component/ErrorNotification';
-import { TodoFilter } from './component/TodoFilter';
 
 export const App: React.FC = () => {
   const [todos, setTodos] = useState<Todo[]>([]);
@@ -120,11 +119,11 @@ export const App: React.FC = () => {
         )}
       </section>
 
-      <TodoFilter
+      <Footer
         filter={filter}
         setFilter={setFilter}
-        completedTodos={completedTodos.length}
-        notCompletedTodos={notCompletedTodos.length}
+        completedTodos={completedTodos}
+        notCompletedTodos={notCompletedTodos}
       />
 
       <ErrorNotification
