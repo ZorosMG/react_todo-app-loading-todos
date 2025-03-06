@@ -40,25 +40,27 @@ export const App: React.FC = () => {
   }
 
   return (
-    <div className="todoapp__content">
+    <div className="todoapp">
       <h1 className="todoapp__title">todos</h1>
-      <header className="todoapp__header">
-        <TodoForm todos={todos} />
-      </header>
-      <TodoList preparedTodos={preparedTodos} errorMessage={errorMessage} />
-      {!errorMessage && (
-        <Footer
-          todos={todos}
+      <div className="todoapp__content">
+        <header className="todoapp__header">
+          <TodoForm todos={todos} />
+        </header>
+        <TodoList preparedTodos={preparedTodos} errorMessage={errorMessage} />
+        {!errorMessage && (
+          <Footer
+            todos={todos}
+            errorMessage={errorMessage}
+            setFilterBy={setFilterBy}
+            filterBy={filterBy}
+            todoCount={todoCount}
+          />
+        )}
+        <Notification
           errorMessage={errorMessage}
-          setFilterBy={setFilterBy}
-          filterBy={filterBy}
-          todoCount={todoCount}
+          onClose={() => setErrorMessage('')}
         />
-      )}
-      <Notification
-        errorMessage={errorMessage}
-        onClose={() => setErrorMessage('')}
-      />
+      </div>
     </div>
   );
 };
