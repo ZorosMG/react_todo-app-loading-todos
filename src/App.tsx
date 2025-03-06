@@ -1,7 +1,8 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 /* eslint-disable no-console */
 /* eslint-disable @typescript-eslint/no-shadow */
-import React, { useEffect, useRef, useState, useMemo } from 'react';
+// App.tsx
+import React, { useState, useEffect, useRef, useMemo } from 'react';
 import { UserWarning } from './UserWarning';
 import { USER_ID } from './api/todos';
 import { createTodo, getTodos, deleteTodo } from './api/todos';
@@ -9,6 +10,9 @@ import { TodoList } from './component/TodoList';
 import { Todo } from './types/Todo';
 import classNames from 'classnames';
 import { Footer } from './component/Footer';
+import { TodoInput } from './component/TodoInput';
+import { ErrorNotification } from './component/ErrorNotification';
+import { TodoFilter } from './component/TodoFilter';
 
 export const App: React.FC = () => {
   const [todos, setTodos] = useState<Todo[]>([]);
@@ -101,24 +105,13 @@ export const App: React.FC = () => {
   return (
     <div className="todoapp">
       <h1 className="todoapp__title">todos</h1>
+
       <header className="todoapp__header">
-        <button
-          type="button"
-          className={classNames('todoapp__toggle-all', {
-            active: completedTodos.length === todos.length,
-          })}
+        <TodoInput
+          title={title}
+          onChange={handleChange}
+          onSubmit={handleSubmit}
         />
-        <form onSubmit={handleSubmit}>
-          <input
-            data-cy="NewTodoField"
-            type="text"
-            className="todoapp__new-todo"
-            placeholder="What needs to be done?"
-            value={title}
-            onChange={handleChange}
-            ref={inputRef}
-          />
-        </form>
       </header>
 
       <section className="todoapp__main">
@@ -127,7 +120,13 @@ export const App: React.FC = () => {
         )}
       </section>
 
-      {/* Тут футер викликається лише один раз */}
+      <TodoFilter
+        filter={filter}
+        setFilter={setFilter}
+        completedTodos={completedTodos.length}
+        notCompletedTodos={notCompletedTodos.length}
+      />
+
       <Footer
         filter={filter}
         setFilter={setFilter}
@@ -135,25 +134,10 @@ export const App: React.FC = () => {
         notCompletedTodos={notCompletedTodos}
       />
 
-      {errorMessage && (
-        <div
-          data-cy="ErrorNotification"
-          className={classNames(
-            'notification is-danger is-light has-text-weight-normal',
-            {
-              hidden: !errorMessage,
-            },
-          )}
-        >
-          <button
-            data-cy="HideErrorButton"
-            type="button"
-            className="delete"
-            onClick={() => setErrorMessage('')}
-          />
-          {errorMessage}
-        </div>
-      )}
+      <ErrorNotification
+        message={errorMessage}
+        onHide={() => setErrorMessage('')}
+      />
     </div>
   );
 };
