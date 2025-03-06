@@ -1,17 +1,17 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 /* eslint-disable @typescript-eslint/no-unused-vars */
-/* eslint-disable no-console */
 /* eslint-disable @typescript-eslint/no-shadow */
+/* eslint-disable no-console */
 // App.tsx
 import React, { useState, useEffect, useRef, useMemo } from 'react';
 import { UserWarning } from './UserWarning';
 import { USER_ID } from './api/todos';
-import { createTodo, getTodos, deleteTodo } from './api/todos';
+import { createTodo, getTodos, deleteTodo, clearCompleted } from './api/todos';
 import { TodoList } from './component/TodoList';
 import { Todo } from './types/Todo';
-import classNames from 'classnames';
-import { Footer } from './component/Footer';
 import { TodoInput } from './component/TodoInput';
 import { ErrorNotification } from './component/ErrorNotification';
+import { TodoFooter } from './component/TodoFooter';
 
 export const App: React.FC = () => {
   const [todos, setTodos] = useState<Todo[]>([]);
@@ -26,6 +26,14 @@ export const App: React.FC = () => {
     setTodos(todos.filter(todo => todo.id !== todoId));
     deleteTodo(todoId).catch(error => {
       setErrorMessage('Unable to delete todo');
+      console.error(error);
+    });
+  };
+
+  const handleClearCompleted = () => {
+    setTodos(todos.filter(todo => !todo.completed));
+    clearCompleted().catch((error: any) => {
+      setErrorMessage('Unable to clear completed todos');
       console.error(error);
     });
   };
@@ -119,11 +127,12 @@ export const App: React.FC = () => {
         )}
       </section>
 
-      <Footer
+      <TodoFooter
         filter={filter}
         setFilter={setFilter}
         completedTodos={completedTodos}
         notCompletedTodos={notCompletedTodos}
+        onClearCompleted={handleClearCompleted}
       />
 
       <ErrorNotification

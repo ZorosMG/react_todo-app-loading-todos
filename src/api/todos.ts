@@ -28,3 +28,21 @@ export const deleteTodo = async (todoId: number): Promise<void> => {
     throw error;
   }
 };
+
+// api/todos.ts
+export const clearCompleted = async (): Promise<void> => {
+  try {
+    const response = await fetch(
+      `/api/todos?userId=${USER_ID}&completed=true`,
+      {
+        method: 'DELETE',
+      },
+    );
+
+    if (!response.ok) {
+      throw new Error('Failed to clear completed todos');
+    }
+  } catch (error) {
+    throw error;
+  }
+};
