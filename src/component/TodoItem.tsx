@@ -5,10 +5,11 @@ import cn from 'classnames';
 
 type Props = {
   todo: Todo;
-  errorMessage: string;
+  loading?: boolean;
+  onRemoveTodo: (id: number) => Promise<void>;
 };
 
-export const TodoItem: React.FC<Props> = ({ todo }) => {
+export const TodoItem: React.FC<Props> = ({ todo, loading, onRemoveTodo }) => {
   const { id, title, completed } = todo;
 
   return (
@@ -27,11 +28,19 @@ export const TodoItem: React.FC<Props> = ({ todo }) => {
         {title}
       </span>
 
-      <button type="button" className="todo__remove" data-cy="TodoDelete">
+      <button
+        type="button"
+        className="todo__remove"
+        data-cy="TodoDelete"
+        onClick={() => onRemoveTodo(todo.id)}
+      >
         ×
       </button>
 
-      <div data-cy="TodoLoader" className="modal overlay">
+      <div
+        data-cy="TodoLoader"
+        className={cn('modal overlay', { 'is-active': loading })}
+      >
         <div className="modal-background has-background-white-ter" />
         <div className="loader" />
       </div>
