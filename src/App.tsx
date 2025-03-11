@@ -56,11 +56,11 @@ export const App: React.FC = () => {
             todoCount={todoCount}
           />
         )}
-        <Notification
-          errorMessage={errorMessage}
-          onClose={() => setErrorMessage('')}
-        />
       </div>
+      <Notification
+        errorMessage={errorMessage}
+        onClose={() => setErrorMessage('')}
+      />
     </div>
   );
 };
